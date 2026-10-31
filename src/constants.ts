@@ -46,6 +46,8 @@ export const UPGRADES_MAX = 64;
 export const UPGRADE_LEVEL_MAX = 1000;
 // Online Gifts (client WINDOWS.gifts): claimed indexes.
 export const GIFTS_MAX = 64;
+// The new player tutorial's stages (client TUTORIAL.stages), with slack for more.
+export const TUTORIAL_MAX = 32;
 
 // Leaderboards (leaderboard.ts; client boards.js, YARD.leaderboard): the saved doc fields ranked,
 // rows per board and how often the lists are re-read and re-sent.
@@ -60,8 +62,8 @@ export const LEADERBOARD_EVERY_MS = 60 * 1000;
 export const PLATFORM_BOARD_EVERY_MS = 30 * 1000;
 export const PLATFORM_BOARD_BATCH = 200;
 export const PLATFORM_BOARDS = [
-  { id: "rebirths", label: "Top Rebirths", order: "desc", mode: "best", format: "number", reset: "none" },
   { id: "earned", label: "Top Earners", order: "desc", mode: "best", format: "compact", reset: "none" },
+  { id: "rebirths", label: "Top Rebirths", order: "desc", mode: "best", format: "number", reset: "none" },
   { id: "playtime", label: "Top Playtime", order: "desc", mode: "best", format: "time", reset: "none" },
 ] as const;
 
