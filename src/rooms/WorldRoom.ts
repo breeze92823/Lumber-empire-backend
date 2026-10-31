@@ -69,8 +69,9 @@ export class WorldRoom extends Room<{ state: WorldState }> {
         await players.updateOne(
           { _id: userId },
           {
-            // Display name comes from this connection's own PlayerState, not `msg`.
-            $set: { ...rest, username: p.username || "Player", updatedAt: new Date() },
+            // Display name comes from this connection's own PlayerState, not `msg`. lastSeen is the
+            // server's clock too: the client pays offline earnings from it, so every save moves it.
+            $set: { ...rest, lastSeen: Date.now(), username: p.username || "Player", updatedAt: new Date() },
             ...(Object.keys(highest).length > 0 && { $max: highest }),
             $setOnInsert: { version: 1 },
           },

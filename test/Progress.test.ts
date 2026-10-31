@@ -41,6 +41,26 @@ describe("progress", () => {
     assert.ok(!("hack" in doc));
   });
 
+  it("sends lastSeen with the server's time and moves it on with every save, whatever the client says", async () => {
+    const long = Date.now() - 3600_000;
+    const fake = fakePlayers([{ _id: "u6", money: 1, lastSeen: long, version: 1, updatedAt: new Date() }]);
+    __setPlayersForTest(fake);
+    const room = await colyseus.createRoom<WorldState>("world", {});
+    const c = await colyseus.connectTo(room, { userId: "u6" });
+    let got: any = null;
+    quiet(c);
+    c.onMessage("progress", (m: any) => (got = m));
+    fake.release();
+    await sleep(150);
+    assert.strictEqual(got?.lastSeen, long);
+    assert.ok(got?.serverTime - got?.lastSeen >= 3600_000);
+
+    const before = Date.now();
+    c.send("saveProgress", { money: 2, lastSeen: long });
+    await sleep(150);
+    assert.ok(fake.docs.get("u6")!.lastSeen! >= before, "a save can't keep the old time to be paid for it twice");
+  });
+
   it("saves the tutorial's progress, sends it back and never lets it go down", async () => {
     const fake = fakePlayers([{ _id: "u5", tutorial: 2, version: 1, updatedAt: new Date() }]);
     __setPlayersForTest(fake);

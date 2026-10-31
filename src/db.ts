@@ -24,7 +24,7 @@ export interface PlayerDoc {
   crates?: number;
   giftTime?: number; // Online Gifts clock, s online this round
   giftsClaimed?: number[]; // WINDOWS.gifts indexes claimed this round
-  lastSeen?: number; // epoch ms of the last activity
+  lastSeen?: number; // epoch ms of the last save or leave, server clock (the client's offline earnings run from it)
   tutorial?: number; // new player tutorial: stages finished, TUTORIAL_MAX = done, unset = a save from before it (only ever goes up)
   version: number;
   updatedAt: Date;
