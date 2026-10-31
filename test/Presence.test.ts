@@ -49,6 +49,13 @@ describe("presence", () => {
     assert.strictEqual(p.avatar, "", "an oversized look is ignored");
     assert.strictEqual(p.plot, "", "an oversized yard is ignored");
 
+    a.send("emote", { emote: "bad id!#1" });
+    await sleep(50);
+    assert.strictEqual(p.emote, "", "a malformed emote is ignored");
+    a.send("emote", { emote: "wave-1#2" });
+    await sleep(50);
+    assert.strictEqual(p.emote, "wave-1#2");
+
     // b's synced copy of the roster sees a's presence.
     const seen = (b.state as any).players.get(a.sessionId);
     assert.strictEqual(seen.x, POSE_BOUNDS.xy);

@@ -12,6 +12,10 @@ export const PFP_MAX_LEN = 512;
 export const AVATAR_MAX_LEN = 3000;
 export const POSE_BOUNDS = { xy: 5000, speed: 200 };
 export const CARRY_MAX = 64;
+// `emote` (presence.ts): a Bloxity emote id plus a number that makes a repeat of it a change.
+export const EMOTE_PATTERN = /^[A-Za-z0-9_-]{1,64}#[0-9]{1,3}$/;
+// `adReward` (adReward.ts): the longest rewarded-ad token passed on to Bloxity.
+export const AD_TOKEN_MAX_LEN = 4096;
 // `plot` (presence.ts): what the sender's yard owns, relayed as JSON for the others to build.
 export const PLOT_MAX_LEN = 8000;
 

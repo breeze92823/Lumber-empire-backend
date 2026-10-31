@@ -1,10 +1,11 @@
 import { Room, Client, CloseCode } from "colyseus";
 import { WorldState, PlayerState } from "./schema/WorldState.js";
 import { LEADERBOARD_EVERY_MS, NAME_MAX, PFP_MAX_LEN, RECONNECT_SECONDS, ROOM_MAX_CLIENTS, YARD_FAST_GAP_MS, YARD_FAST_NUMBERS, YARD_SLOW_GAP_MS, YARD_SLOW_NUMBERS } from "../constants.js";
+import { verifyAdReward } from "../adReward.js";
 import { accountFor } from "../auth.js";
 import { getPlayers, type PlayerDoc } from "../db.js";
 import { sanitizeProgress } from "../sanitize.js";
-import { applyAvatar, applyPlot, applyPose } from "../presence.js";
+import { applyAvatar, applyEmote, applyPlot, applyPose } from "../presence.js";
 import { ranksOf, topBoards } from "../leaderboard.js";
 import { queueScores } from "../platformBoards.js";
 import { allowFrame, isFrame } from "../relay.js";
@@ -92,6 +93,19 @@ export class WorldRoom extends Room<{ state: WorldState }> {
     setPlot: (client: Client, msg: unknown) => {
       const p = this.state.players.get(client.sessionId);
       if (p) applyPlot(p, msg);
+    },
+    emote: (client: Client, msg: unknown) => {
+      const p = this.state.players.get(client.sessionId);
+      if (p) applyEmote(p, msg);
+    },
+    // A watched rewarded ad (adReward.ts): the answer goes to its sender alone.
+    adReward: async (client: Client, msg: { rewardToken?: unknown }) => {
+      const ok = await verifyAdReward(msg?.rewardToken);
+      try {
+        client.send("adReward", { ok });
+      } catch {
+        // Gone meanwhile.
+      }
     },
     // Live yard frames (relay.ts): passed on as [slot, frame], the slot being the sender's own.
     yardFast: (client: Client, msg: unknown) => {

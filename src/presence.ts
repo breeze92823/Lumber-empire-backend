@@ -1,4 +1,4 @@
-import { AVATAR_MAX_LEN, CARRY_MAX, ID_PATTERN, PLOT_MAX_LEN, POSE_BOUNDS } from "./constants.js";
+import { AVATAR_MAX_LEN, CARRY_MAX, EMOTE_PATTERN, ID_PATTERN, PLOT_MAX_LEN, POSE_BOUNDS } from "./constants.js";
 import type { PlayerState } from "./rooms/schema/WorldState.js";
 
 // Presence: what the other clients need to draw a player and their yard (client remotePlayers.js,
@@ -29,6 +29,12 @@ export function applyPose(p: PlayerState, msg: unknown): void {
 export function applyAvatar(p: PlayerState, msg: unknown): void {
   const a = (msg as { avatar?: unknown })?.avatar;
   if (typeof a === "string" && a.length <= AVATAR_MAX_LEN) p.avatar = a;
+}
+
+// `emote` { emote }: Boxity only tells the player who picked it, so the others hear it here.
+export function applyEmote(p: PlayerState, msg: unknown): void {
+  const e = (msg as { emote?: unknown })?.emote;
+  if (typeof e === "string" && EMOTE_PATTERN.test(e)) p.emote = e;
 }
 
 // `setPlot` { plot }: the sender's yard as an opaque JSON string, length-capped.
