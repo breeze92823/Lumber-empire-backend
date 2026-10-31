@@ -18,6 +18,7 @@ export const PlayerState = schema(
     swing: t.float32().default(0), // how far through an axe swing, 0 = none
     carryKind: t.string().default(""), // the product in their hands, "" = nothing
     carryCount: t.uint8().default(0),
+    emote: t.string().default(""), // the last Bloxity emote started, "<id>#<n>", "" = none yet
     avatar: t.string().default(""), // Bloxity look JSON { equipped, proportions }, "" = default
     plot: t.string().default(""), // their yard JSON { owned, levels, rebirths, crew, signs }, "" = fresh
   },
