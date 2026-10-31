@@ -61,16 +61,17 @@ export class WorldRoom extends Room<{ state: WorldState }> {
       const players = getPlayers();
       if (!players) return; // Mongo unset/unreachable -- degrade silently
       // These only ever go up ($max), so a stale or replayed save can't lower a leaderboard score.
-      const { earned, rebirths, playtime, ...rest } = patch;
+      const { earned, rebirths, playtime, tutorial, ...rest } = patch;
       const best = { earned, rebirths, playtime };
       for (const key of Object.keys(best) as (keyof typeof best)[]) if (best[key] === undefined) delete best[key];
+      const highest = tutorial === undefined ? best : { ...best, tutorial }; // the same, but no score
       try {
         await players.updateOne(
           { _id: userId },
           {
             // Display name comes from this connection's own PlayerState, not `msg`.
             $set: { ...rest, username: p.username || "Player", updatedAt: new Date() },
-            ...(Object.keys(best).length > 0 && { $max: best }),
+            ...(Object.keys(highest).length > 0 && { $max: highest }),
             $setOnInsert: { version: 1 },
           },
           { upsert: true },

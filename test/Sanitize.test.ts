@@ -1,6 +1,6 @@
 import assert from "assert";
 
-import { CURRENCY_MAX, OWNED_MAX } from "../src/constants.js";
+import { CURRENCY_MAX, OWNED_MAX, TUTORIAL_MAX } from "../src/constants.js";
 import { sanitizeProgress } from "../src/sanitize.js";
 
 describe("sanitizeProgress", () => {
@@ -29,6 +29,14 @@ describe("sanitizeProgress", () => {
   it("bounds upgrade levels", () => {
     const out = sanitizeProgress({ upgrades: { axe: 2.9, walkSpeed: -1, "bad id": 1, carry: "x" } })!;
     assert.deepStrictEqual(out.upgrades, { axe: 2, walkSpeed: 0 });
+  });
+
+  it("bounds the tutorial's progress and leaves it unset on a save from before it", () => {
+    assert.strictEqual(sanitizeProgress({ tutorial: 2.9 })!.tutorial, 2);
+    assert.strictEqual(sanitizeProgress({ tutorial: -1 })!.tutorial, 0);
+    assert.strictEqual(sanitizeProgress({ tutorial: 1e9 })!.tutorial, TUTORIAL_MAX);
+    assert.ok(!("tutorial" in sanitizeProgress({ tutorial: "x" })!));
+    assert.ok(!("tutorial" in sanitizeProgress({ money: 1 })!));
   });
 
   it("bounds the crew and the Online Gifts state", () => {

@@ -1,6 +1,6 @@
 import {
   COUNT_MAX, CURRENCY_MAX, GIFTS_MAX, ID_PATTERN, OWNED_MAX, PLAY_SECONDS_MAX, REBIRTHS_MAX, SALE_PATTERN,
-  UPGRADE_LEVEL_MAX, UPGRADES_MAX,
+  TUTORIAL_MAX, UPGRADE_LEVEL_MAX, UPGRADES_MAX,
 } from "./constants.js";
 import type { PlayerDoc } from "./db.js";
 
@@ -46,6 +46,7 @@ export function sanitizeProgress(raw: unknown): Partial<PlayerDoc> | null {
   if (finite(raw.rebirths)) out.rebirths = clampInt(raw.rebirths, REBIRTHS_MAX);
   if (finite(raw.playtime)) out.playtime = clampInt(raw.playtime, PLAY_SECONDS_MAX);
   if (finite(raw.lastSeen)) out.lastSeen = clampInt(raw.lastSeen, Date.now() + 10 * 60 * 1000);
+  if (finite(raw.tutorial)) out.tutorial = clampInt(raw.tutorial, TUTORIAL_MAX);
 
   if (raw.owned !== undefined) out.owned = sanitizeOwned(raw.owned);
   if (raw.upgrades !== undefined) out.upgrades = sanitizeUpgrades(raw.upgrades);

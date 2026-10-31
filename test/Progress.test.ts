@@ -41,6 +41,26 @@ describe("progress", () => {
     assert.ok(!("hack" in doc));
   });
 
+  it("saves the tutorial's progress, sends it back and never lets it go down", async () => {
+    const fake = fakePlayers([{ _id: "u5", tutorial: 2, version: 1, updatedAt: new Date() }]);
+    __setPlayersForTest(fake);
+    const room = await colyseus.createRoom<WorldState>("world", {});
+    const c = await colyseus.connectTo(room, { userId: "u5" });
+    let got: any = null;
+    quiet(c);
+    c.onMessage("progress", (m: any) => (got = m));
+    fake.release();
+    await sleep(150);
+    assert.strictEqual(got?.tutorial, 2);
+
+    c.send("saveProgress", { tutorial: 1, money: 1 });
+    await sleep(150);
+    assert.strictEqual(fake.docs.get("u5")!.tutorial, 2, "a stale save can't send a player back");
+    c.send("saveProgress", { tutorial: 3 });
+    await sleep(150);
+    assert.strictEqual(fake.docs.get("u5")!.tutorial, 3);
+  });
+
   it("creates a new account's save and never saves a guest", async () => {
     const fake = fakePlayers();
     __setPlayersForTest(fake);
